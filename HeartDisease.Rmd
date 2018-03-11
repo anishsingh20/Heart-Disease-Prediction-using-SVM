@@ -13,9 +13,28 @@ output: html_notebook
 In the following document, I will be using SVM classification techinque to predict heart disease (angiographic disease status). From a set of 14 variables, the most important to predict heart failure are whether or not there is a reversable defect in Thalassemia followed by whether or not there is an occurrence of asymptomatic chest pain.
 
 
+## Dataset:
+
+
+The heart disease data are available at UCI The description of the database can be found [here](https://archive.ics.uci.edu/ml/machine-learning-databases/heart-disease/).
 
 
 
+let's read the dataset from the URL in R.
+
+```{r}
+
+heartdf <- read.csv("https://archive.ics.uci.edu/ml/machine-learning-databases/heart-disease/processed.cleveland.data",header=FALSE,sep=",",na.strings = '?')
+
+
+names(heartdf) <- c( "age", "sex", "cp", "trestbps", "chol","fbs", "restecg",
+                   "thalach","exang", "oldpeak","slope", "ca", "thal", "num")
+
+```
+
+The variable we want to predict is num with Value 0: < 50% diameter narrowing and Value 1: > 50% diameter narrowing. We assume that every value with 0 means heart is okay, and 1,2,3,4 means heart disease.
+
+From the possible values the variables can take, it is evident that the following need to be dummified because the distances in the values is random: cp,thal, restecg, slope
 
 
 
