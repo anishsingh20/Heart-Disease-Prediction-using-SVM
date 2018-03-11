@@ -260,6 +260,8 @@ __ROC curve is the plot of True positive rate vs the false positive rate__.
 
 ```{r}
 #ROC and AUC value
+
+
 AUC<- roc(na.omit(testData2)$num,as.numeric(as.matrix((svmPredictionprob))))$auc
 
 Accuracy<- ConfMatrixPrediction$overall['Accuracy'] 
@@ -268,6 +270,24 @@ svmPerformance<-cbind(AUC,Accuracy)
 
 svmPerformance
 
+
+
 ```
 
-Hence we get an __AUC__ value of 0.911 and overall __prediction__ accuracy of 0.89
+Hence we get an __AUC__ value of 0.911 and overall __prediction__ accuracy of 0.89.
+
+
+
+### Plotting the ROC curve-
+
+We will use the __roc()__ function to find the parameters which contain all the sensitivity(TPR) and specificity(FPR) and other predictive parameters for a classifier.
+
+```{r}
+
+auc_roc<-roc(na.omit(testData2)$num,as.numeric(as.matrix((svmPredictionprob))))
+
+plot(auc_roc)
+
+
+```
+
