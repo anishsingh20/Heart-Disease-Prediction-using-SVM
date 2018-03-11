@@ -1,8 +1,10 @@
 ---
 title: "Heart disease prediction using SVM"
-author : Anish Singh Walia
-date: 11 march 2018
-output: html_notebook
+author: "Anish Singh Walia"
+date: "11 march 2018"
+output:
+  html_document:
+    df_print: paged
 ---
 
 
@@ -36,5 +38,34 @@ The variable we want to predict is num with Value 0: < 50% diameter narrowing an
 
 From the possible values the variables can take, it is evident that the following need to be dummified because the distances in the values is random: cp,thal, restecg, slope
 
+Let's get a quick idea of data
+
+
+```{r}
+
+head(heartdf,3)
+
+dim(heartdf)# dimensions of the dataset
+
+```
+
+
+Let's explore the data and find how many had heart attacks, women or men have of a particular age?
+
+Let's first convert the dependent(class variable) $Y-num$ to binary variable.  
+
+
+```{r}
+#converting the num variable to binary class variable 
+
+heartdf$num<-ifelse(heartdf$num > 0,"have heart disease","no heart disease")
+
+table(heartdf$num)
+
+#distribution of the target variable
+ggplot(heartdf,aes(x = num)) +
+  geom_bar()
+
+```
 
 
