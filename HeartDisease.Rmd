@@ -25,6 +25,7 @@ The heart disease data are available at UCI The description of the database can 
 let's read the dataset from the URL in R.
 
 ```{r}
+require(ggplot2)
 
 heartdf <- read.csv("https://archive.ics.uci.edu/ml/machine-learning-databases/heart-disease/processed.cleveland.data",header=FALSE,sep=",",na.strings = '?')
 
@@ -59,7 +60,7 @@ Let's first convert the dependent(class variable) $Y-num$ to binary variable.
 ```{r}
 #converting the num variable to binary class variable 
 
-heartdf$num<-ifelse(heartdf$num > 0,"have heart disease","no heart disease")
+heartdf$num<-ifelse(heartdf$num > 0,"Disease","noDisease")
 
 table(heartdf$num)
 
@@ -153,9 +154,100 @@ We can notice that as age increase maximum heart rate achived descreases, as the
 let's now predict who is likely to have a hear disease and who is not?
 
 
+Separating training and testing data
+
+
+```{r}
+library(caret)
+set.seed(20)
+
+
+inTrainRows <- createDataPartition(heartdf$num,p=0.7,list=FALSE)
+
+
+trainData <- heartdf[inTrainRows,]
+testData <-  heartdf[-inTrainRows,]
+nrow(trainData)/(nrow(testData)+nrow(trainData)) #checking whether really 70% -> OK
+
+```
 
 
 
 
 
+#Building a SVM classifier
+
+
+Now SVM classifier tends to generate hyperplanes which separate the classes with maximum margins i.e in simpler terms it aims to generate maximum marginal hyperplane.
+
+So amongst a set of competing hypothesis $h_i(x)$ we want to choose which maximizes the margin between both the classes on wither side of the separating hyperplane.
+
+__*So a linear SVM classifier will generate a simple linear hyperplane for linearlly separable data*__.
+
+
+
+```{r}
+
+# for this to work add names to all levels (numbers not allowed)
+feature.names=names(heartdf)
+
+for (f in feature.names) {
+  if (class(heartdf[[f]])=="factor") {
+    levels <- unique(c(heartdf[[f]]))
+    heartdf[[f]] <- factor(heartdf[[f]],
+                   labels=make.names(levels))
+  }
+}
+
+#converting to factor variable with 2 levels
+heartdf$num<-as.factor(heartdf$num)
+levels(heartdf$num) <- c("Notdisease","Disease")
+
+table(heartdf$num)
+
+set.seed(10)
+
+inTrainRows <- createDataPartition(heartdf$num,p=0.7,list=FALSE)
+trainData2 <- heartdf[inTrainRows,]
+testData2 <-  heartdf[-inTrainRows,]
+
+
+#cross validation
+fitControl <- trainControl(method = "repeatedcv",
+                           number = 10,
+                           repeats = 10,
+                           ## Estimate class probabilities
+                           classProbs = TRUE,
+                           ## Evaluate performance using
+                           ## the following function
+                           summaryFunction = twoClassSummary)
+
+
+
+
+svmModel <- train(num ~ ., data = na.omit(trainData2),
+                 method = "svmRadial",
+                 trControl = fitControl,
+                 preProcess = c("center", "scale"),
+                 tuneLength = 8,
+                 metric = "ROC")
+
+svmModel
+
+#prediction on test data-class labels
+svmPrediction <- predict(svmModel, testData2)
+
+#probability of no heart disease-finding probabilities value
+svmPredictionprob <- predict(svmModel, testData2, type='prob')
+
+#generating a confusion matrix
+ConfMatrixPrediction <- confusionMatrix(svmPrediction, na.omit(testData2)$num)
+
+
+#ROC Curve
+AUC$svm <- roc(as.numeric(testData2$num),as.numeric(as.matrix((svmPredictionprob))))$auc
+Accuracy$svm <- svmConfMat$overall['Accuracy']  
+
+
+```
 
