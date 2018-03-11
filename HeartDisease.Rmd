@@ -3,6 +3,8 @@ title: "Heart disease prediction using SVM"
 author: "Anish Singh Walia"
 date: "11 march 2018"
 output:
+  pdf_document: default
+  word_document: default
   html_document:
     df_print: paged
 ---
@@ -26,6 +28,7 @@ let's read the dataset from the URL in R.
 
 ```{r}
 require(ggplot2)
+require(pROC) #to plot the ROC curves
 
 heartdf <- read.csv("https://archive.ics.uci.edu/ml/machine-learning-databases/heart-disease/processed.cleveland.data",header=FALSE,sep=",",na.strings = '?')
 
@@ -180,7 +183,7 @@ nrow(trainData)/(nrow(testData)+nrow(trainData)) #checking whether really 70% ->
 
 Now SVM classifier tends to generate hyperplanes which separate the classes with maximum margins i.e in simpler terms it aims to generate maximum marginal hyperplane.
 
-So amongst a set of competing hypothesis $h_i(x)$ we want to choose which maximizes the margin between both the classes on wither side of the separating hyperplane.
+So amongst a set of competing hypothesis $h_i(x)$ we want to choose the one which maximizes the margin between both the classes on either side of the separating hyperplane, i.e  our main goal is to separate the classes on either sides of hyperplane with __maximum margin__ using the *support vectors*(which help us define the maximum margins).
 
 __*So a linear SVM classifier will generate a simple linear hyperplane for linearlly separable data*__.
 
@@ -238,16 +241,33 @@ svmModel
 svmPrediction <- predict(svmModel, testData2)
 
 #probability of no heart disease-finding probabilities value
-svmPredictionprob <- predict(svmModel, testData2, type='prob')
+svmPredictionprob <- predict(svmModel, testData2, type='prob')[2]
 
 #generating a confusion matrix
 ConfMatrixPrediction <- confusionMatrix(svmPrediction, na.omit(testData2)$num)
 
-
-#ROC Curve
-AUC$svm <- roc(as.numeric(testData2$num),as.numeric(as.matrix((svmPredictionprob))))$auc
-Accuracy$svm <- svmConfMat$overall['Accuracy']  
+ConfMatrixPrediction$table
 
 
 ```
 
+__In the confusion matrix the diagonals represent the correctly classified examples, whereas the offdiagonals are incorrectly classifier examples.__
+
+
+### Let's find the ROC curver and the AUC value to better understand the accuracy and performance-
+
+__ROC curve is the plot of True positive rate vs the false positive rate__.
+
+```{r}
+#ROC and AUC value
+AUC<- roc(na.omit(testData2)$num,as.numeric(as.matrix((svmPredictionprob))))$auc
+
+Accuracy<- ConfMatrixPrediction$overall['Accuracy'] 
+
+svmPerformance<-cbind(AUC,Accuracy)
+
+svmPerformance
+
+```
+
+Hence we get an __AUC__ value of 0.911 and overall __prediction__ accuracy of 0.89
