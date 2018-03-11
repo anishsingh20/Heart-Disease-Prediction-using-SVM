@@ -81,6 +81,27 @@ ggplot(heartdf,aes(x=sex)) +
   facet_wrap(~num)
 
 
+
+
+#heart disease and age
+#making a box plot to unserstand the statistical distribution
+
+by(heartdf$age,heartdf$num,summary)
+
+
+
 ```
+
+So people who had heart disease for them the mean age is 56.6
+
+
+
+```{r}
+
+ggplot(heartdf,aes(x = num,y = age)) +
+  geom_boxplot()
+
+```
+
 
 
