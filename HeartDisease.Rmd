@@ -64,7 +64,22 @@ table(heartdf$num)
 
 #distribution of the target variable
 ggplot(heartdf,aes(x = num)) +
-  geom_bar()
+  geom_bar(fill="black")
+
+
+
+#converting to factor variable
+heartdf$sex<-ifelse(heartdf$sex==0,"female","male")
+
+table(heartdf$sex)
+
+
+table(sex=heartdf$sex,disease=heartdf$num)
+
+ggplot(heartdf,aes(x=sex)) +
+  geom_bar(fill="purple") +
+  facet_wrap(~num)
+
 
 ```
 
