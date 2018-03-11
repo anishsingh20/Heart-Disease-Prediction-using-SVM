@@ -144,3 +144,18 @@ ggplot(heartdf,aes(x = age,y = thalach )) +
 We can notice that as age increase maximum heart rate achived descreases, as the cor-relation is negetive.
 
 
+------------------------
+
+
+## predictive Modelling
+
+
+let's now predict who is likely to have a hear disease and who is not?
+
+
+
+
+
+
+
+
