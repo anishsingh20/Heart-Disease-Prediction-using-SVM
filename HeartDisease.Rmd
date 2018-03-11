@@ -32,6 +32,7 @@ heartdf <- read.csv("https://archive.ics.uci.edu/ml/machine-learning-databases/h
 names(heartdf) <- c( "age", "sex", "cp", "trestbps", "chol","fbs", "restecg",
                    "thalach","exang", "oldpeak","slope", "ca", "thal", "num")
 
+attach(heartdf)
 ```
 
 The variable we want to predict is num with Value 0: < 50% diameter narrowing and Value 1: > 50% diameter narrowing. We assume that every value with 0 means heart is okay, and 1,2,3,4 means heart disease.
@@ -103,5 +104,43 @@ ggplot(heartdf,aes(x = num,y = age)) +
 
 ```
 
+
+### Let's do some correlation analysis between some variables-
+
+```{r}
+
+cor.test(age,chol) #very low correlation
+
+```
+We can see that age and cholestrol levlels have very low cor-relation.
+
+
+```{r}
+#confusion matrix of chest pain and heart disease
+table(cp,num)
+
+#confusuon matrix of exersice induced asthama and heart disease
+table(exang,num)
+
+
+```
+
+We can notice from the table that people who had heart diseases had severe level of chest pain.
+Also people who had heart diseases had exercise induced asthama.
+
+
+Correlation between age and maximum heart rate achieved-
+
+```{r}
+cor.test(age,thalach)
+
+
+ggplot(heartdf,aes(x = age,y = thalach )) + 
+  geom_point() + 
+  geom_smooth()
+
+```
+
+We can notice that as age increase maximum heart rate achived descreases, as the cor-relation is negetive.
 
 
